@@ -1,5 +1,5 @@
 (ns dce.foo
-  (:use dce.GenericThrowable))
+  (:use dce.ClojureException))
 
 (defn test-func [x y]
   (try+ (let [a 1 b 2]
