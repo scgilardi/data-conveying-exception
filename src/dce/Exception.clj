@@ -6,12 +6,22 @@
                            java.util.Map]
               :state state
               :init init
+              :post-init post-init
               :constructors {[java.util.Map]
+                             [String Throwable]
+                             [Throwable java.util.Map]
                              [String Throwable]}))
 
 (defn -init
   ([{:keys [message cause] :as state}]
+     [[message cause] state])
+  ([other {:keys [message cause] :as state}]
      [[message cause] state]))
+
+(defn -post-init
+  ([self state])
+  ([self other state]
+     (.setStackTrace self (.getStackTrace other))))
 
 (defn -toString [self]
   (.toString (.state self)))
@@ -38,20 +48,20 @@
   (.entryAt (.state self)))
 
 (defn -assoc [self key val]
-  (dce.Exception. (assoc (.state self) key val)))
+  (dce.Exception. self (assoc (.state self) key val)))
 
 ;; IPersistentMap
 
 (defn -without [self key]
-  (dissoc (.state self) key))
+  (dce.Exception. self (dissoc (.state self) key)))
 
 ;; IPersistentCollection
 
 (defn -cons [self o]
-  (dce.Exception. (.cons (.state self) o)))
+  (dce.Exception. self (.cons (.state self) o)))
 
 (defn -empty [self]
-  (dce.Exception. {}))
+  (dce.Exception. self {}))
 
 (defn -equiv [self o]
   (.equiv (.state self) (.state o)))
