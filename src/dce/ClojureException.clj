@@ -12,15 +12,15 @@
 (defn -toString [self]
   (str (.getCanonicalName (class self)) ": " (-> self .state :obj)))
 
-(defmacro throw+ [obj]
-  `(throw (dce.ClojureException. ~obj (zipmap '~(keys &env) [~@(keys &env)]))))
-
 (defn- catch-form? [x]
   (and (seq? x) (= 'catch (first x))))
 
 (defn- type-name? [x]
   (or (keyword? x)
       (and (symbol? x) (class? (resolve x)))))
+
+(defmacro throw+ [obj]
+  `(throw (dce.ClojureException. ~obj (zipmap '~(keys &env) [~@(keys &env)]))))
 
 (defmacro try+
   [& body]
