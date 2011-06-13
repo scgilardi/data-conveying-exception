@@ -26,18 +26,18 @@
   [& body]
   (let [catch-clauses (filter catch-form? body)
         try-body (remove catch-form? body)
-        throwable (gensym)
         thrown (gensym)]
     `(try
        ~@try-body
-       (catch Throwable ~throwable
-         (let [~thrown (if (instance? dce.ClojureException ~throwable)
-                         (-> ~throwable .state :obj)
-                         ~throwable)
-               (when (instance? dce.ClojureException ~throwable)
+       (catch Throwable throwable#
+         (let [~thrown (if (instance? dce.ClojureException throwable#)
+                         (-> throwable# .state :obj)
+                         throwable#)
+               ~'&throw-context
+               (when (instance? dce.ClojureException throwable#)
                  (hash-map
-                  :env (-> ~throwable .state :env)
-                  :stack (into-array (drop 3 (.getStackTrace ~throwable)))))]
+                  :env (-> throwable# .state :env)
+                  :stack (into-array (drop 3 (.getStackTrace throwable#)))))]
            (cond
             ~@(mapcat
                (fn [[_ type-or-pred local-name & catch-body]]
@@ -48,4 +48,4 @@
                      ~@catch-body)])
                catch-clauses)
             :else
-            (throw ~throwable)))))))
+            (throw throwable#)))))))
