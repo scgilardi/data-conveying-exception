@@ -1,4 +1,4 @@
-(ns dce.test.exception
+(ns dce.test.Exception
   (:use [clojure.test]
         [dce.handle]
         [dce.Exception :only [throw+]]))
