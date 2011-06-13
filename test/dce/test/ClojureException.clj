@@ -3,9 +3,22 @@
         [dce.ClojureException :only [try+ throw+]]))
 
 (defrecord oit-exception [error-code duration-ms message])
+(defrecord x-failure [message])
 
 (def exception-1 (Exception. "exceptional"))
 (def oit-exception-1 (oit-exception. 6 1000 "pdf failure"))
+
+(defn mult-func [x y]
+  (let [a 7 b 11]
+    (if (= x 3)
+      (* a b x y)
+      (throw+ (x-failure. "x isn't 3... really??")))))
+
+(defn test-func [x y]
+  (try+
+   (mult-func x y)
+   (catch x-failure e
+     [e (:env &thrown-context)])))
 
 (defmacro mega-try [body]
   `(try+
@@ -52,3 +65,8 @@
            (mega-try (throw+ (oit-exception. 6 1000 "pdf failure"))))))
   (testing "catching an organic IllegalArgumentException"
     (is (= :iae (first (mega-try (first 1)))))))
+
+(deftest test-locals
+  (is (= 1155 (test-func 3 5)))
+  (is (= [(x-failure. "x isn't 3... really??")
+          {'mult-func mult-func 'x 4 'y 7 'a 7 'b 11}] (test-func 4 7))))
