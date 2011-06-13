@@ -17,8 +17,8 @@
 (defn test-func [x y]
   (try+
    (mult-func x y)
-   (catch x-failure e
-     [e (:env &throw-context)])))
+   (catch x-failure {msg :message}
+     [msg (:env &throw-context)])))
 
 (defmacro mega-try [body]
   `(try+
@@ -66,7 +66,7 @@
   (testing "catching an organic IllegalArgumentException"
     (is (= :iae (first (mega-try (first 1)))))))
 
-(deftest test-locals
+(deftest test-locals-and-destructuring
   (is (= 1155 (test-func 3 5)))
-  (is (= [(x-failure. "x isn't 3... really??")
+  (is (= ["x isn't 3... really??"
           {'mult-func mult-func 'x 4 'y 7 'a 7 'b 11}] (test-func 4 7))))
