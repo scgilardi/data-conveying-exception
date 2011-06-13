@@ -34,7 +34,6 @@
          (let [~thrown (if (instance? dce.ClojureException ~throwable)
                          (-> ~throwable .state :obj)
                          ~throwable)
-               ~'&thrown-context
                (when (instance? dce.ClojureException ~throwable)
                  (hash-map
                   :env (-> ~throwable .state :env)

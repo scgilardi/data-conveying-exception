@@ -18,7 +18,7 @@
   (try+
    (mult-func x y)
    (catch x-failure e
-     [e (:env &thrown-context)])))
+     [e (:env &throw-context)])))
 
 (defmacro mega-try [body]
   `(try+
